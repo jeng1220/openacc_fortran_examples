@@ -1,0 +1,5 @@
+*.o
+*.mod
+mpi_basic
+openacc_nested_loop
+
