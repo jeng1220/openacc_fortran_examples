@@ -14,4 +14,4 @@ cuda_graph: cuda_graph_m.f90 main_graph.f90
 	pgfortran -acc -Mcuda=cuda10.2 main_graph.o cuda_graph_m.o -o $@
 
 clean:
-	rm -f $(out) *.mod *.o *.pdb a.out *.obj
+	rm -f $(out) *.mod *.o *.pdb a.out *.obj *.dwf *.exe
