@@ -15,7 +15,7 @@ program main
   integer(c_size_t) :: buffer_len
 
   istat = cudaStreamCreateWithFlags(my_stream, cudaStreamNonBlocking)
-  print*, istat
+  print*, cudaGetErrorString(istat)
 
   allocate(a(1024))
   do i = 1, 1024
@@ -24,7 +24,6 @@ program main
 
   call acc_set_cuda_stream(1, my_stream)
 
-
   ! NO cudaGraph version
   do n = 1,1000
     !$acc parallel loop copy(a(1024)) async(1) 
@@ -32,13 +31,12 @@ program main
       a(i) = a(i) + 1
     end do
   end do
-  istat = cudaStreamSynchronize(my_stream)
-  print*, "a:", a(1)
-
+  !$acc wait(1)
+  print*, 'a(1) is', a(1), ', a(1) should be 1000'
 
   ! Capture only, NO kerenl execution
   istat = cudaStreamBeginCapture(my_stream, 0)
-  print*, istat
+  print*, cudaGetErrorString(istat)
 
   do n = 1,1000
     !$acc parallel loop copy(a(1024)) async(1) 
@@ -46,30 +44,20 @@ program main
       a(i) = a(i) + 1
     end do
   end do
-  ! prove NO kernel execution
-  print*, "a:", a(1)
-
   istat = cudaStreamEndCapture(my_stream, graph)
-  print*, istat
-
+  print*, cudaGetErrorString(istat)
+  ! prove NO kernel execution
+  print*, 'a(1) is', a(1), ', a(1) should be 1000'
 
   ! execute cudaGraph
   buffer_len = 0
   istat = cudaGraphInstantiate(graph_exec, graph, error_node, buffer, buffer_len)
-  print*, istat
-
-  ! 1st time
+  print*, cudaGetErrorString(istat)
   istat = cudaGraphLaunch(graph_exec, my_stream)
-  print*, istat
-
+  print*, cudaGetErrorString(istat)
   istat = cudaStreamSynchronize(my_stream)
-  print*, "a:", a(1)
+  print*, cudaGetErrorString(istat)
+  print*, 'a(1) is', a(1), ', a(1) should be 2000'
 
-  ! 2nd time
-  istat = cudaGraphLaunch(graph_exec, my_stream)
-  print*, istat
-
-  istat = cudaStreamSynchronize(my_stream)
-  print*, "a:", a(1)
-
+  deallocate(a)
 end program
