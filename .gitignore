@@ -6,4 +6,5 @@
 *.mod
 mpi_basic
 openacc_nested_loop
+parallel_call
 
