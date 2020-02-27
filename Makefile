@@ -1,5 +1,5 @@
 TA=tesla
-out=openacc_nested_loop mpi_basic cuda_graph parallel_call
+out=openacc_nested_loop mpi_basic cuda_graph parallel_call async
 all: $(out)
 
 openacc_nested_loop: openacc_nested_loop.f90
@@ -15,6 +15,9 @@ parallel_call: parallel_call.f90 mod_bar.f90
 	pgf90 -acc -ta=tesla:managed -Minfo=accel -Mcuda -c mod_bar.f90
 	pgf90 -acc -ta=tesla:managed -Minfo=accel -Mcuda -c parallel_call.f90
 	pgf90 -acc -ta=tesla:managed -Minfo=accel -Mcuda parallel_call.o mod_bar.o -o $@
+
+async: async.f90
+	pgf90 -acc -ta=tesla:managed -Minfo=accel -Mcuda -Mpreprocess -O0 -g $^ -o $@
 
 clean:
 	rm -f $(out) *.mod *.o *.pdb a.out *.obj *.dwf *.exe
