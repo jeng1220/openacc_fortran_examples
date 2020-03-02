@@ -51,6 +51,6 @@ program main
             call bar(size)
         end do
     end do
-    call acc_async_wait_all()    
+    call acc_async_wait_all()
 
 end program main
