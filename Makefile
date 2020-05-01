@@ -1,5 +1,5 @@
 TA=tesla
-out=openacc_nested_loop mpi_basic cuda_graph parallel_call async mix_cpu_gpu_parallel instrument_function
+out=openacc_nested_loop mpi_basic cuda_graph parallel_call async mix_cpu_gpu_parallel instrument_function set_array f_call_c
 CUDA_ROOT=/usr/local/cuda
 
 all: $(out)
@@ -31,6 +31,12 @@ instrument_function: instrument_function.f90 nvtx.cpp
 
 set_array: set_array.f90
 	pgf90 -acc -ta=tesla:managed -Minfo=accel -Mcuda -Mpreprocess -O3 $^ -o $@
+
+f_call_c: f_call_c.f90 cfun.c
+	pgf90 -c -O0 -g -acc -ta=tesla:managed -Minfo=accel -Mcuda -Mpreprocess f_call_c.f90
+	pgcc -c -O0 -g -acc -ta=tesla:managed cfun.c
+	pgf90 -acc -ta=tesla:managed -Minfo=accel -Mcuda -Mpreprocess f_call_c.o cfun.o -o $@
+
 
 clean:
 	rm -f $(out) *.mod *.o *.pdb a.out *.obj *.dwf *.exe
