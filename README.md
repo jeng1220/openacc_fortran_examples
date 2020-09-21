@@ -1,5 +1,8 @@
 # Fortran Study #
 
+## requirement ##
+* NVIDIA HPC SDK v20.7
+
 ## bulid ##
 ```sh
 $ cd <folder>
