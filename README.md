@@ -1,4 +1,4 @@
-# Fortran Study #
+# Simple OpenACC Fortran Examples #
 
 ## requirement ##
 * NVIDIA HPC SDK v20.7
