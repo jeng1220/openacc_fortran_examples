@@ -2,6 +2,7 @@
 
 ## bulid ##
 ```sh
+$ cd <folder>
 $ make
 ```
 

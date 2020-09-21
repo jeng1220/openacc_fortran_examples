@@ -4,10 +4,4 @@
 *.pdb
 *.o
 *.mod
-mpi_basic
-openacc_nested_loop
-parallel_call
-cuda_graph
-async
-mix_cpu_gpu_parallel
 

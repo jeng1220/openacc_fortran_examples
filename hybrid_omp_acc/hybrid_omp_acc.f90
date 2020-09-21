@@ -1,33 +1,30 @@
-
 program main
     implicit none
-    integer i, j, n, m, size
+    integer i, j, n, m
     integer, allocatable, dimension(:) :: task
     integer, allocatable, dimension(:) :: data
 
     n = 10
-    size = 1000
     allocate(task(n))
     do i=1, n
-        task(i) = i * size
+        task(i) = i * 1000
     end do
-    print*, task
+    print*, 'parallel 10 tasks, each task has 1 GPU kernel'
     
     !$omp parallel do private(i, m, data) schedule(dynamic)
     do j=1, n
         m = task(j)
         allocate(data(m))
 
-        !$acc parallel loop async(j)
+        !$acc parallel loop copy(data) async(j)
         do i=1, m
             data(i) = j
         end do
+        !$acc wait(j)
 
         deallocate(data)
     end do
     !$omp end parallel do
-
-    call acc_async_wait_all()
 
     deallocate(task)
     

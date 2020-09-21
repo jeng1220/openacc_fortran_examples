@@ -4,31 +4,33 @@ program main
     integer rank, size, tag, count, ierr
     integer src, dest
     integer status(mpi_status_size)
-    double precision data(10)
+    real data(3)
 
     call mpi_init(ierr)
-    call mpi_comm_rank(mpi_comm_world, rank, ierr)
-    call mpi_comm_size(mpi_comm_world, size, ierr)
+    call mpi_comm_rank(MPI_COMM_WORLD, rank, ierr)
+    call mpi_comm_size(MPI_COMM_WORLD, size, ierr)
     print *, 'process ', rank, ' of ', size, ' is alive'
-    call mpi_barrier(mpi_comm_world, ierr)
 
+    data = 0
     dest = size - 1
     src = 0
-    count = 10
+    count = 3
     tag = 0
 
     if (rank .eq. dest) then
         print *, 'before mpi send-recv:', data
     endif
+    call mpi_barrier(MPI_COMM_WORLD, ierr)
 
     if (rank .eq. src) then
-        data = 777
-        call mpi_send(data, count, mpi_double_precision, dest, tag, mpi_comm_world, ierr)
+        data = 123
+        print*, 'send \"123\" to destination process'
+        call mpi_send(data, count, MPI_REAL, dest, tag, MPI_COMM_WORLD, ierr)
     else if (rank .eq. dest) then
-        call mpi_recv(data, count, mpi_double_precision, src, tag, mpi_comm_world, status, ierr)
+        call mpi_recv(data, count, MPI_REAL, src, tag, MPI_COMM_WORLD, status, ierr)
     endif
   
-    call mpi_barrier(mpi_comm_world, ierr)
+    call mpi_barrier(MPI_COMM_WORLD, ierr)
 
     if (rank .eq. dest) then
         print *, 'after mpi send-recv:', data

@@ -1,36 +1,30 @@
 subroutine other(n)
     implicit none
-    integer :: i, n
-    do i=1, n*100
-    end do
+    integer :: n
+
+    call sleep(1)
 end subroutine other
 
 subroutine bar(n)
     implicit none
     integer :: i, n
-    do i=1, n
-        call other(n)
-    end do
+
+    call other(n)
 end subroutine bar
 
 subroutine foo(n)
     implicit none
     integer :: i, n
-    real :: start, finish
-    call cpu_time(start)
-    do i=1, n
-        call bar(n)
-    end do
-    call cpu_time(finish)
-    print*, 'Time =', (finish - start)*1000, 'ms.'
+
+    call bar(n)
 end subroutine foo
 
 program main
     implicit none
     integer :: i, n
-    n = 300
-    do i=1, n
-        !print*, i
+
+    n = 3
+    do i = 1, n
         call foo(n)
     end do    
 end program main
