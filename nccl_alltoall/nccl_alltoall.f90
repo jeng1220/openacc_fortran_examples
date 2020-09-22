@@ -1,98 +1,90 @@
-subroutine print_data(x, n, rank, size)
-    use mpi
-    implicit none
-    integer :: i, n, rank, size, ierr
-    integer :: x(n)
- 
-    do i = 0, (size - 1)
-        call mpi_barrier(MPI_COMM_WORLD, ierr)
-        if (i .eq. rank) then
-            print*, "rank:\n", rank
-            print*, "data:\n", x
-            call flush(6)
-        end if
-        call mpi_barrier(MPI_COMM_WORLD, ierr)
-    end do   
-end subroutine
-
 program main
     use mpi
     use cudafor
     use nccl
     implicit none
-    integer rank, size, tag, count, total, ierr
-    integer src, dest
-    integer i
-    integer status(mpi_status_size)
-    integer, allocatable :: sendbuf(:)
-    integer, allocatable :: recvbuf(:)
+    integer i, mpi_rank, mpi_size, tag, n, total, ierr
+    integer, allocatable :: sendbuf(:), mpi_recvbuf(:), nccl_recvbuf(:)
+    real start, finish
     ! NCCL data:
     type(ncclResult) :: nccl_stat
     type(ncclUniqueId) :: nccl_uid
     type(ncclComm) :: nccl_comm
-    integer cuda_stat, num_gpu
+    integer cuda_stat
     integer(kind=cuda_stream_kind) :: cuda_stream
 
-    call mpi_init(ierr)
-    call mpi_comm_rank(MPI_COMM_WORLD, rank, ierr)
-    call mpi_comm_size(MPI_COMM_WORLD, size, ierr)
-    print *, 'process ', rank, ' of ', size, ' is alive'
+    call MPI_Init(ierr)
+    call MPI_Comm_rank(MPI_COMM_WORLD, mpi_rank, ierr)
+    call MPI_Comm_size(MPI_COMM_WORLD, mpi_size, ierr)
+    print *, 'process ', mpi_rank, ' of ', mpi_size, ' is alive'
     ! must be called at first
-    cuda_stat = cudaSetDevice(rank)
+    cuda_stat = cudaSetDevice(mpi_rank)
 
-    count = 4
-    total = count * size
+    n = 1000000
+    total = n * mpi_size
     allocate(sendbuf(total))
-    allocate(recvbuf(total))
+    allocate(mpi_recvbuf(total))
+    allocate(nccl_recvbuf(total))
 
+    !$acc enter data create(sendbuf, mpi_recvbuf, nccl_recvbuf)
+
+    !$acc kernels
     do i = 1, total
-        sendbuf(i) = i + rank * size
+        sendbuf(i) = i + mpi_rank * mpi_size
     end do
-    recvbuf = 0
-    call print_data(sendbuf, total, rank, size)
-    call mpi_barrier(MPI_COMM_WORLD, ierr)
+    mpi_recvbuf = 0
+    nccl_recvbuf = 0
+    !$acc end kernels
 
-    if (rank .eq. 0) then
-        print*, "MPI Alltoall:"
-        call flush(6)
-    end if
-
-    ! MPI Alltoall: 
-    call mpi_alltoall(sendbuf, count, MPI_INT, &
-                      recvbuf, count, MPI_INT, &
+    call cpu_time(start)
+    !$acc host_data use_device(sendbuf, mpi_recvbuf)
+    call MPI_Alltoall(sendbuf, n, MPI_INTEGER, &
+                      mpi_recvbuf, n, MPI_INTEGER, &
                       MPI_COMM_WORLD, ierr)
-    call mpi_barrier(MPI_COMM_WORLD, ierr)
-
-    call print_data(recvbuf, total, rank, size)
-    recvbuf = 0
-    if (rank .eq. 0) then
-        print*, "NCCL Alltoall:"
-        call flush(6)
+    !$acc end host_data
+    call cpu_time(finish)
+    if (mpi_rank .eq. 0) then
+        print '("MPI Alltoall time = ",f6.3," seconds.")', (finish - start)
     end if
-    call mpi_barrier(MPI_COMM_WORLD, ierr)
 
     ! init NCCL data
-    if (rank .eq. 0) then
+    if (mpi_rank .eq. 0) then
         nccl_stat = ncclGetUniqueId(nccl_uid)
     end if
-    call mpi_bcast(nccl_uid, sizeof(ncclUniqueId), MPI_BYTE, 0, MPI_COMM_WORLD, ierr)
-    call mpi_barrier(MPI_COMM_WORLD, ierr)
-    nccl_stat = ncclCommInitRank(nccl_comm, size, nccl_uid, rank);
+    call MPI_Bcast(nccl_uid, sizeof(ncclUniqueId), MPI_BYTE, 0, MPI_COMM_WORLD, ierr)
+    call MPI_Barrier(MPI_COMM_WORLD, ierr)
+    nccl_stat = ncclCommInitRank(nccl_comm, mpi_size, nccl_uid, mpi_rank);
     cuda_stat = cudaStreamCreate(cuda_stream)
 
+    ! NCCL Alltoall
+    call cpu_time(start)
     nccl_stat = ncclGroupStart()
-    !$acc host_data use_device(sendbuf, recvbuf) 
-    do i = 0, (size - 1)
-        nccl_stat = ncclSend(sendbuf(1+i*count), count, ncclInt, i, nccl_comm, cuda_stream)
-        nccl_stat = ncclRecv(recvbuf(1+i*count), count, ncclInt, i, nccl_comm, cuda_stream)
+    !$acc host_data use_device(sendbuf, nccl_recvbuf) 
+    do i = 0, (mpi_size - 1)
+        nccl_stat = ncclSend(sendbuf(i * n + 1), n, ncclInt, i, nccl_comm, cuda_stream)
+        nccl_stat = ncclRecv(nccl_recvbuf(i * n + 1), n, ncclInt, i, nccl_comm, cuda_stream)
     end do
     !$acc end host_data
- 
-    nccl_stat = ncclGroupEnd()          
+    nccl_stat = ncclGroupEnd()
     cuda_stat = cudaStreamSynchronize(cuda_stream)
+    call cpu_time(finish)
+    if (mpi_rank .eq. 0) then
+        print '("NCCL Alltoall time = ",f6.3," seconds.")', (finish - start)
+    end if
 
-    call print_data(recvbuf, total, rank, size)
-    call mpi_finalize(ierr)
-    deallocate(sendbuf, recvbuf)
+    !$acc exit data delete(sendbuf) copyout(mpi_recvbuf, nccl_recvbuf)
+    do i = 1, total
+        if (mpi_recvbuf(i) .ne. nccl_recvbuf(i)) then
+            print*, 'ERROR, NCCL Alltoall is NOT equal to MPI Alltoall'
+            call exit
+        end if
+    end do
+
+    if (mpi_rank .eq. 0) then
+        print*, 'PASSED, NCCL Alltoall is equal to MPI Alltoall'
+    end if
+
+    deallocate(sendbuf, mpi_recvbuf, nccl_recvbuf)
+    call MPI_Finalize(ierr)
 end program main
 
