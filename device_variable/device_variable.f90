@@ -6,16 +6,17 @@ module bar
 contains
 end module
 
-subroutine foo(sub_data, w, h)
+subroutine foo(sub_data, n)
     !$acc routine vector
     use bar
     implicit none
 
-    integer x, w, h
-    integer, contiguous, dimension(w, h), intent(inout) :: sub_data
+    integer i, n
+    integer sub_data(n)
+    print*, 'GPU thread reads a variable from module \"bar\"'
     !$acc loop
-    do x = 1, w
-        sub_data(x, 1) = sub_data(x, 1) + 1 + global_var
+    do i = 1, n
+        sub_data(i) = sub_data(i) + 1 + global_var
     end do
 end subroutine
 
@@ -24,23 +25,22 @@ program main
     use bar
     implicit none
 
-    integer x, y, w, h
-    integer, allocatable, contiguous, dimension(:,:) :: all_data
+    integer y, w, h
+    integer, allocatable :: all_data(:, :)
 
     w = 6
     h = 3
     allocate(all_data(w, h))
-    all_data(:, :) = 0
+    all_data = 0
 
     global_var = 123
 
     !$acc parallel loop gang
     do y = 1, h
-        all_data(1:w, y) = y
-        call foo(all_data(1:w, y), w, 1)
+        all_data(:, y) = y
+        call foo(all_data(:, y), w)
     end do
 
     print*, all_data
     deallocate(all_data)
-
 end program main
