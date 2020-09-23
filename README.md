@@ -8,7 +8,7 @@ Author: Bai-Cheng Jeng(rjeng@nvidia.com)
 * [alternative_nested_parallelism](/alternative_nested_parallelism) - alternative to nested parallelism on the GPU
 * [array_setting](/array_setting) - faster way to initialize a GPU array 
 * [atomic_op](/atomic_op) - use atomic operation to maximize parallelism
-* [c_binding](/c_binding) - call CUDA C from Fortran
+* [cuda_c_binding](/cuda_c_binding) - call CUDA C from Fortran
 * [cuda_graph](/cuda_graph) - faster way to launch GPU kernels
 * [device_routine](/device_routine) - usage of GPU routine
 * [device_variable](/device_variable) - usage of GPU variable in Fortran module

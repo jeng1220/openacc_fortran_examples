@@ -21,13 +21,13 @@ program main
 
   do y = 1, h
   do x = 1, w
-    buf(x, y) = (y - 1) * w + (x - 1)
+    buf(x, y) = (y - 1) * (2 * w) + (x - 1)
   end do
   end do
 
   print *, 'print from fortran:\n', buf
   call my_c_func(buf, w, h)
-  print *, 'after C function, print from fortran:\n', buf
+  print *, 'after CUDA C function, print from fortran:\n', buf
 
   deallocate(buf)
 end program main
