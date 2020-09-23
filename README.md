@@ -1,6 +1,8 @@
 # Simple OpenACC Fortran Examples #
 Author: Bai-Cheng Jeng(rjeng@nvidia.com)
 
+An example code is worth a thousand words. The repository intends to host fundamental, but useful examples. Each example is just a few dozen lines of code. Most of them come from my past experience in HPC projects, but readers do not need to have the HPC background to understand the examples.
+
 ## Eexamples ##
 ### Basic ###
 * [acc_async](/acc_async) - faster way to enqueue GPU routines(kernels)
