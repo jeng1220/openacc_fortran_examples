@@ -1,10 +1,12 @@
-subroutine foo(a, n)
+program main
     implicit none
     integer :: n
-    real :: a(n,n,n,n)
+    real, allocatable :: a(:, :, :, :)
     integer :: i, j, k, l
     real start, finish
 
+    n = 100
+    allocate(a(n, n, n, n))
     !$acc enter data create(a(n, n, n, n))
 
     call cpu_time(start)
@@ -29,18 +31,16 @@ subroutine foo(a, n)
     print '("parallel setting 2 time = ",f6.3," seconds.")', (finish - start) 
 
     call cpu_time(start)    
-    !$acc parallel present(a)
-    !$acc loop collapse(4)
-    do l = 1, 100
-    do k = 1, 100
-    do j = 1, 100
-    do i = 1, 100
+    !$acc parallel loop present(a) collapse(4)
+    do l = 1, n 
+    do k = 1, n 
+    do j = 1, n 
+    do i = 1, n 
         a(i,j,k,l) = 0.0
     end do
     end do
     end do
     end do
-    !$acc end parallel
     call cpu_time(finish)
     print '("parallel setting 3 time = ",f6.3," seconds.")', (finish - start) 
 
@@ -66,15 +66,6 @@ subroutine foo(a, n)
     print '("kernel setting 2 time = ",f6.3," seconds.")', (finish - start) 
 
     !$acc exit data delete(a)
-end subroutine foo
-
-program main
-    implicit none
-    integer :: n
-    real, allocatable, dimension(:,:,:,:) :: a
-
-    n = 100
-    allocate(a(n,n,n,n))
-    call foo(a, n)
     deallocate(a)
 end program main
+
