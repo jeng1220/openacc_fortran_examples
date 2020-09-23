@@ -1,8 +1,8 @@
-out=multi_stream
+out=acc_async
 
 all: $(out)
 
-multi_stream: multi_stream.f90
+acc_async: acc_async.f90
 	pgf90 -acc -ta=tesla:pinned -Minfo=accel $^ -Mcuda -o $@
 
 clean:
