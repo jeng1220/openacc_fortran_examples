@@ -19,7 +19,7 @@ An example code is worth a thousand words. The repository intends to host fundam
 ### MPI ###
 * [cuda_mpi_allreduce](/cuda_mpi_allreduce) - CUDA-Aware MPI, faster way to use MPI on GPU
 * [cuda_unified_memory_mpi_sendrecv](/cuda_unified_memory_mpi_sendrecv) - usage of CUDA Unified Memory and MPI, more convenient way to use MPI on GPU
-* [nccl_alltoall](/hybrid_omp_acc) - faster Alltoall on GPU
+* [nccl_alltoall](/nccl_alltoall) - faster Alltoall on GPU
 
 ### Profiling ###
 * [auto_nvtx](/auto_nvtx) - use compiler to insert CPU profiling routines automatically
