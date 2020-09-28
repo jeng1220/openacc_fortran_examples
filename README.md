@@ -12,8 +12,8 @@ An example code is worth a thousand words. This repository intends to host funda
 * [atomic_op](/atomic_op) - use atomic operation to maximize parallelism
 * [cuda_c_binding](/cuda_c_binding) - call CUDA C from Fortran
 * [cuda_graph](/cuda_graph) - faster way to launch GPU kernels
-* [device_routine](/device_routine) - usage of GPU routine
-* [device_variable](/device_variable) - usage of GPU variable in Fortran module
+* [device_routine](/device_routine) - usage of GPU routine. Call other routines in the GPU kernel
+* [device_variable](/device_variable) - usage of GPU variable. Access a global variable from other modules in the GPU kernel 
 * [hybrid_omp_acc](/hybrid_omp_acc) - usage of OpenMP and OpenACC
 
 ### MPI ###
