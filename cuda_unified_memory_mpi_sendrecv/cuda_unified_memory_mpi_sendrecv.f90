@@ -35,9 +35,7 @@ program main
                       recvbuf, n, MPI_INTEGER, &
                       src, tag, &
                       MPI_COMM_WORLD, MPI_STATUS_IGNORE, ierr)
-
     !$acc end host_data
-    call MPI_Barrier(MPI_COMM_WORLD, ierr)
 
     if (mpi_rank .eq. mpi_size - 1) then
        print *, 'after MPI Sendrecv:\n', recvbuf

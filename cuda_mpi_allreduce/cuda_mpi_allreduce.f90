@@ -23,7 +23,6 @@ program main
 
     !$acc host_data use_device(sendbuf, recvbuf)
     call MPI_Allreduce(sendbuf, recvbuf, n, MPI_INT, MPI_SUM, MPI_COMM_WORLD, ierr)
-    call MPI_Barrier(MPI_COMM_WORLD, ierr)
     !$acc end host_data
 
     !$acc exit data copyout(recvbuf) delete(sendbuf)
