@@ -1,13 +1,28 @@
+## Requirement ##
+* CUDA-Aware MPI
+
+## Check OpenMPI version ##
+```bash
+$ ompi_info --parsable --all | grep mpi_built_with_cuda_support:value
+```
+It should return `true`
+
+## Check OpenMPI, infiniband and CUDA for multi-node ##
+```bash
+$ ompi_info --all | grep btl_openib_have_cuda_gdr
+$ ompi_info --all | grep btl_openib_have_driver_gdr
+```
+It should return `true`
+
 ## Run ##
 ```bash
 $ mpirun -n 2 --allow-run-as-root ./cuda_mpi_sendrecv
+OR:
+$ mpirun -n 2 --mca btl_openib_want_cuda_gdr 1 ./cuda_mpi_sendrecv
 ```
-## Reference ##
-* [Unified Memory for CUDA Beginners](https://developer.nvidia.com/blog/unified-memory-cuda-beginners/)
-* [Unified Memory: Now for CUDA Fortran Programmers](https://developer.nvidia.com/blog/unified-memory-cuda-fortran-programmers/)
-* [Combine OpenACC and Unified Memory for Productivity and Performance](https://developer.nvidia.com/blog/combine-openacc-unified-memory-productivity-performance/)
-* [Maximizing Unified Memory Performance in CUDA](https://developer.nvidia.com/blog/maximizing-unified-memory-performance-cuda/)
 
-Legacy:
-* [Unified Memory in CUDA 6](https://developer.nvidia.com/blog/unified-memory-in-cuda-6/)
-* [Beyond GPU Memory Limits with Unified Memory on Pascal](https://developer.nvidia.com/blog/beyond-gpu-memory-limits-unified-memory-pascal/)
+## Reference ##
+* [An Introduction to CUDA-Aware MPI](https://developer.nvidia.com/blog/introduction-cuda-aware-mpi)
+* [Benchmarking CUDA-Aware MPI](https://developer.nvidia.com/blog/benchmarking-cuda-aware-mpi)
+* [Building CUDA-aware Open MPI](https://www.open-mpi.org/faq/?category=buildcuda)
+* [Running CUDA-aware Open MPI](https://www.open-mpi.org/faq/?category=runcuda)
