@@ -22,7 +22,7 @@ program main
     call MPI_Bcast(buf, n, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr) 
 
     if (buf(1) .ne. mpi_size) then
-       print*, 'buf is', buf(1), ', but it should be', mpi_size
+       print*, 'ERROR, buf is', buf(1), ', but it should be', mpi_size
     end if
 
     if (mpi_rank .eq. 0) then
