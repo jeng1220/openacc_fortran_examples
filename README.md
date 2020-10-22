@@ -17,9 +17,10 @@ An example code is worth a thousand words. This repository intends to host funda
 * [hybrid_omp_acc](/hybrid_omp_acc) - usage of OpenMP and OpenACC
 
 ### MPI ###
-* [cuda_mpi_allreduce](/cuda_mpi_allreduce) - CUDA-Aware MPI, faster way to use MPI on GPU
-* [cuda_unified_memory_mpi_sendrecv](/cuda_unified_memory_mpi_sendrecv) - usage of CUDA Unified Memory and MPI, more convenient way to use MPI on GPU
+* [cuda_mpi_sendrecv](/cuda_mpi_sendrecv) - CUDA-Aware MPI, faster way to use MPI on GPU
+* [cuda_unified_memory_mpi_bcast](/cuda_unified_memory_mpi_bcast) - usage of CUDA Unified Memory and MPI, more convenient way to use MPI on GPU
 * [nccl_alltoall](/nccl_alltoall) - faster Alltoall on GPU
+* [nccl_alltoallv](/nccl_alltoallv) - faster Alltoallv on GPU
 
 ### Profiling ###
 * [auto_nvtx](/auto_nvtx) - use compiler to insert CPU profiling routines automatically
