@@ -3,8 +3,8 @@ program main
     use cudafor
     use nccl
     implicit none
-    integer i, mpi_rank, mpi_size, tag, n, total, ierr
-    integer, allocatable :: sendbuf(:), mpi_recvbuf(:), nccl_recvbuf(:)
+    integer i, j, mpi_rank, mpi_size, n, ierr
+    integer, allocatable :: sendbuf(:,:), mpi_recvbuf(:,:), nccl_recvbuf(:,:)
     real start, finish
     ! NCCL data:
     type(ncclResult) :: nccl_stat
@@ -21,16 +21,17 @@ program main
     cuda_stat = cudaSetDevice(mpi_rank)
 
     n = 1000000
-    total = n * mpi_size
-    allocate(sendbuf(total))
-    allocate(mpi_recvbuf(total))
-    allocate(nccl_recvbuf(total))
+    allocate(sendbuf(n, mpi_size))
+    allocate(mpi_recvbuf(n, mpi_size))
+    allocate(nccl_recvbuf(n, mpi_size))
 
     !$acc enter data create(sendbuf, mpi_recvbuf, nccl_recvbuf)
 
     !$acc kernels
-    do i = 1, total
-        sendbuf(i) = i + mpi_rank * mpi_size
+    do j = 1, mpi_size
+    do i = 1, n
+        sendbuf(i, j) = mpi_rank + j * n + i
+    end do
     end do
     mpi_recvbuf = 0
     nccl_recvbuf = 0
@@ -61,8 +62,8 @@ program main
     nccl_stat = ncclGroupStart()
     !$acc host_data use_device(sendbuf, nccl_recvbuf) 
     do i = 0, (mpi_size - 1)
-        nccl_stat = ncclSend(sendbuf(i * n + 1), n, ncclInt, i, nccl_comm, cuda_stream)
-        nccl_stat = ncclRecv(nccl_recvbuf(i * n + 1), n, ncclInt, i, nccl_comm, cuda_stream)
+        nccl_stat = ncclSend(sendbuf(1, i+1), n, ncclInt, i, nccl_comm, cuda_stream)
+        nccl_stat = ncclRecv(nccl_recvbuf(1, i+1), n, ncclInt, i, nccl_comm, cuda_stream)
     end do
     !$acc end host_data
     nccl_stat = ncclGroupEnd()
@@ -73,11 +74,13 @@ program main
     end if
 
     !$acc exit data delete(sendbuf) copyout(mpi_recvbuf, nccl_recvbuf)
-    do i = 1, total
-        if (mpi_recvbuf(i) .ne. nccl_recvbuf(i)) then
+    do j = 1, mpi_size
+    do i = 1, n
+        if (mpi_recvbuf(i, j) .ne. nccl_recvbuf(i, j)) then
             print*, 'ERROR, NCCL Alltoall is NOT equal to MPI Alltoall'
             call exit
         end if
+    end do
     end do
 
     if (mpi_rank .eq. 0) then
