@@ -1,6 +1,6 @@
 ## Run ##
 ```bash
-$ mpirun -n 2 --allow-run-as-root ./cuda_unified_memory_mpi_sendrecv
+$ mpirun -n 2 --allow-run-as-root ./cuda_mpi_sendrecv
 ```
 ## Reference ##
 * [Unified Memory for CUDA Beginners](https://developer.nvidia.com/blog/unified-memory-cuda-beginners/)
