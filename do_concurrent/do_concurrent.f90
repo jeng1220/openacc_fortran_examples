@@ -1,13 +1,22 @@
-subroutine saxpy_iso(x, y, n, a)
+subroutine seq_saxpy(x, y, n, a)
+  real :: a, x(n), y(n)
+  integer :: n, i
+
+  do i = 1, n
+    y(i) = a * x(i) + y(i)
+  enddo
+end subroutine seq_saxpy
+
+subroutine par_saxpy(x, y, n, a)
   real :: a, x(n), y(n)
   integer :: n, i
 
   do concurrent (i = 1: n) 
     y(i) = a * x(i) + y(i)
   enddo  
-end subroutine saxpy_iso
+end subroutine par_saxpy
 
-subroutine saxpy_acc(x, y, n, a)
+subroutine acc_saxpy(x, y, n, a)
   real :: a, x(n), y(n)
   integer :: n, i  
 
@@ -15,7 +24,7 @@ subroutine saxpy_acc(x, y, n, a)
   do i = 1, n
     y(i) = a * x(i) + y(i)
   enddo  
-end subroutine saxpy_acc
+end subroutine acc_saxpy
 
 program main
     implicit none
@@ -32,14 +41,20 @@ program main
     !$acc end kernels
 
     call cpu_time(start)
-    call saxpy_acc(x, y, n, 0.5)
+    call acc_saxpy(x, y, n, 0.5)
     call cpu_time(finish)
     print '("OpenACC saxpy time = ",f6.3," seconds.")', (finish - start)
 
     call cpu_time(start)
-    call saxpy_iso(x, y, n, 0.5)
+    call par_saxpy(x, y, n, 0.5)
     call cpu_time(finish)
-    print '("ISO Standard saxpy time = ",f6.3," seconds.")', (finish - start)
+    print '("Parallel saxpy time = ",f6.3," seconds.")', (finish - start)
+
+    call cpu_time(start)
+    call seq_saxpy(x, y, n, 0.5)
+    call cpu_time(finish)
+    print '("Sequential saxpy time = ",f6.3," seconds.")', (finish - start)
 
     deallocate(x, y)
 end program main
+
