@@ -27,13 +27,12 @@ An example code is worth a thousand words. This repository intends to host funda
 * [profiling_range](/profiling_range) - demonstration of focused profiling via profiling tool
 
 ## Requirement ##
-* NVIDIA HPC SDK v20.7
+* NVIDIA HPC SDK 21.3
 
-Install HPC SDK via Docker:
-```sh
-$ docker pull nvcr.io/nvidia/nvhpc:20.7-devel-centos7
-```
+To install HPC SDK via Docker, visit NVIDIA GPU Cloud: https://ngc.nvidia.com/catalog/containers/nvidia:nvhpc/tags
+
 Or download HPC SDK from official website: https://developer.nvidia.com/hpc-sdk
+
 ## Bulid ##
 ```sh
 $ cd <folder>

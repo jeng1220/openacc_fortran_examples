@@ -1,15 +1,18 @@
 subroutine other(n)
     implicit none
     integer :: n
-
-    call sleep(1)
+    ! do nothing here
+    n = n + 1
 end subroutine other
 
 subroutine bar(n)
     implicit none
     integer :: i, n
 
-    call other(n)
+    n = 1000
+    do i = 1, n
+        call other(n)
+    end do
 end subroutine bar
 
 subroutine foo(n)

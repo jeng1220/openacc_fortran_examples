@@ -1,3 +1,6 @@
+## Requirement ##
+* NVIDIA HPC SDK 21.3
+
 ## Run ##
 ```bash
 $ nsys profile -t nvtx ./auto_nvtx
