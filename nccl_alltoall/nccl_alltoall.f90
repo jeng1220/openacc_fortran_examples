@@ -52,7 +52,7 @@ program main
     if (mpi_rank .eq. 0) then
         nccl_stat = ncclGetUniqueId(nccl_uid)
     end if
-    call MPI_Bcast(nccl_uid, sizeof(ncclUniqueId), MPI_BYTE, 0, MPI_COMM_WORLD, ierr)
+    call MPI_Bcast(nccl_uid, int(sizeof(ncclUniqueId)), MPI_BYTE, 0, MPI_COMM_WORLD, ierr)
     call MPI_Barrier(MPI_COMM_WORLD, ierr)
     nccl_stat = ncclCommInitRank(nccl_comm, mpi_size, nccl_uid, mpi_rank);
     cuda_stat = cudaStreamCreate(cuda_stream)
