@@ -10,10 +10,12 @@ An example code is worth a thousand words. This repository intends to host funda
 * [alternative_nested_parallelism](/alternative_nested_parallelism) - alternative to nested parallelism on the GPU
 * [array_setting](/array_setting) - faster way to initialize a GPU array 
 * [atomic_op](/atomic_op) - use atomic operation to maximize parallelism
+* [auto_depend](/auto_depend) - automatic dependency solution
 * [cuda_c_binding](/cuda_c_binding) - call CUDA C from Fortran
 * [cuda_graph](/cuda_graph) - faster way to launch GPU kernels
 * [device_routine](/device_routine) - usage of GPU routine. Call other routines in the GPU kernel
-* [device_variable](/device_variable) - usage of GPU variable. Access a global variable from other modules in the GPU kernel 
+* [device_variable](/device_variable) - usage of GPU variable. Access a global variable from other modules in the GPU kernel
+* [do_concurrent](/do_concurrent) - DO CONCURRENT construct (Fortran 2008)
 * [hybrid_omp_acc](/hybrid_omp_acc) - usage of OpenMP and OpenACC
 
 ### MPI ###
