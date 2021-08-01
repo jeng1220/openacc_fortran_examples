@@ -7,8 +7,9 @@ An example code is worth a thousand words. This repository intends to host funda
 ### Basic ###
 * [acc_async](/acc_async) - faster way to enqueue GPU routines(kernels)
 * [access_efficiency](/access_efficiency) - faster way to access a GPU arrary
-* [alternative_nested_parallelism](/alternative_nested_parallelism) - alternative to nested parallelism on the GPU
-* [array_setting](/array_setting) - faster way to initialize a GPU array 
+* [alternative_nested_parallelism](/alternative_nested_parallelism) - alternative to nested parallelism on the GPU\
+* [array_of_pointers](/array_of_pointers) - array of pointers usage
+* [array_setting](/array_setting) - faster way to initialize a GPU array
 * [atomic_op](/atomic_op) - use atomic operation to maximize parallelism
 * [auto_depend](/auto_depend) - automatic dependency solution
 * [cuda_c_binding](/cuda_c_binding) - call CUDA C from Fortran
