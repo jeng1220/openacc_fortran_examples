@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+project(TCO LANGUAGES Fortran)
+set(CMAKE_Fortran_COMPILER nvfortran)
+set(SOURCE_FILES bar.f90 foo.f90)
+set(EXEC_FILE auto_depend)
+add_executable(${EXEC_FILE} ${SOURCE_FILES})
